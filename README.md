@@ -7,3 +7,10 @@ This repo is for integrating GitHub issues with cohere.ai's APIs to make open so
 this project uses a `.env` file to configure environment variables.
 
 see [example.env](./example.env) for requirements.
+
+running locally can be done via:
+
+```sh
+env $(cat .env) go run main.go classify
+env $(cat .env) dlv debug main.go -- classify
+```
