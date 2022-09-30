@@ -2,6 +2,7 @@ package issues
 
 import (
 	"context"
+	"fmt"
 	"math/rand"
 	"time"
 
@@ -21,25 +22,27 @@ func ShuffleIssues(src []*github.Issue) []*github.Issue {
 }
 
 func IssueText(issue *github.Issue) (text string) {
-	// abbreviatedBody := issue.GetBody()[0:maxIssueBodyChars]
-	// text = fmt.Sprintf("%s:\n\n%s", issue.GetTitle(), abbreviatedBody)
-	// text = fmt.Sprintf("%s:\n\n%s", issue.GetTitle(), abbreviatedBody)
-	return issue.GetTitle()
+	body := issue.GetBody()
+	if len(body) > maxIssueBodyChars {
+		body = body[0:maxIssueBodyChars]
+	}
+	text = fmt.Sprintf("%s:\n\n%s", issue.GetTitle(), body)
+	return text
 }
 
 func IssuesWithoutLabel(issues []*github.Issue, targetLabel *github.Label, limit int) (withoutLabelIssues []*github.Issue, err error) {
-	for i, issue := range issues {
+	for i := range issues {
 		matched := false
-		for _, label := range issue.Labels {
-			if targetLabel.Name == label.Name {
+		for _, label := range issues[i].Labels {
+			if *targetLabel.Name == *label.Name {
 				matched = true
 			}
 		}
 		if !matched {
-			withoutLabelIssues = append(withoutLabelIssues, issue)
-		}
-		if i > limit {
-			break
+			withoutLabelIssues = append(withoutLabelIssues, issues[i])
+			if len(withoutLabelIssues) == limit {
+				break
+			}
 		}
 
 	}
@@ -48,18 +51,14 @@ func IssuesWithoutLabel(issues []*github.Issue, targetLabel *github.Label, limit
 }
 
 func IssuesForLabel(issues []*github.Issue, targetLabel *github.Label, limit int) (labelIssues []*github.Issue, err error) {
-	for i, issue := range issues {
-		matched := false
-		for _, label := range issue.Labels {
-			if targetLabel.Name == label.Name {
-				matched = true
+	for i := range issues {
+		for _, label := range issues[i].Labels {
+			if *targetLabel.Name == *label.Name {
+				labelIssues = append(labelIssues, issues[i])
+				if len(labelIssues) == limit {
+					break
+				}
 			}
-		}
-		if matched {
-			labelIssues = append(labelIssues, issue)
-		}
-		if i > limit {
-			break
 		}
 	}
 
@@ -87,6 +86,7 @@ func NewRepositoryIssues(nwo string) (issues []*github.Issue, err error) {
 	repositoryName := env.RepositoryName()
 
 	opts := &github.IssueListByRepoOptions{
+		State: "all",
 		ListOptions: github.ListOptions{
 			Page: 0,
 		},
@@ -109,4 +109,4 @@ func NewRepositoryIssues(nwo string) (issues []*github.Issue, err error) {
 	return issues, nil
 }
 
-const maxIssueBodyChars = 1024
+const maxIssueBodyChars = 512
