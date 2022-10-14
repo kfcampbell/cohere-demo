@@ -61,7 +61,7 @@ to quickly create a Cobra application.`,
 				if err != nil {
 
 					// FIXME: excludes labels as classify targets
-					if err == classify.ErrNoIssuesForLabel {
+					if err == classify.ErrInsufficientIssuesForLabel {
 						// fmt.Printf("WARN: unable to classify by label '%s'\n", *label.Name)
 						continue nextLabel
 					}

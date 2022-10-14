@@ -2,6 +2,10 @@
 
 This repo is for integrating GitHub issues with cohere.ai's APIs to make open source maintainers' daily tasks easier.
 
+## usage
+
+ensure labels in a repository are applied to at least 2 issues for the label to be elligible as a classification target.
+
 ## developing
 
 this project uses a `.env` file to configure environment variables.

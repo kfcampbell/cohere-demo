@@ -33,8 +33,8 @@ func NewClassifyAsLabelRequest(unlabelledIssue *github.Issue, label *github.Labe
 	}
 
 	labelledIssues, err := issues.IssuesForLabel(repositoryIssues, label, maxLabelledIssues)
-	if len(labelledIssues) == 0 {
-		return opts, ErrNoIssuesForLabel
+	if len(labelledIssues) < 2 {
+		return opts, ErrInsufficientIssuesForLabel
 	}
 
 	if err != nil {
@@ -64,4 +64,4 @@ const defaultModel string = `large`
 const maxLabelledIssues int = 40
 const maxOtherIssues int = 10
 
-var ErrNoIssuesForLabel error = errors.New("failed to find any issues with matching label")
+var ErrInsufficientIssuesForLabel error = errors.New("failed to find any issues with matching label")
